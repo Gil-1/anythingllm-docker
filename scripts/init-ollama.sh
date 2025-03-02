@@ -8,8 +8,10 @@ echo "Waiting for Ollama service to start..."
 sleep 10
 
 # Pull the Qwen 2.5 model
-echo "Pulling Qwen 2.5 model..."
-ollama pull qwen2.5:7b
+echo "Pulling models..."
+ollama pull llama3:8b-instruct-q5_1
+ollama pull llama3.1:8b-instruct-q8_0
+ollama pull wen2.5:7b-instruct-q8_0
 
 # Pull the embedding model
 echo "Pulling embedding model..."

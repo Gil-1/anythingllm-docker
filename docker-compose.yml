@@ -12,14 +12,14 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - LLM_PROVIDER=ollama
       - OLLAMA_BASE_PATH=http://ollama:11434
-      - OLLAMA_MODEL=qwen2.5:7b
-      - OLLAMA_MODEL_TOKEN_LIMIT=4096
+      - OLLAMA_MODEL=llama3:8b-instruct-q5_1
+      - OLLAMA_MODEL_TOKEN_LIMIT=2048
       - EMBEDDING_ENGINE=ollama
       - EMBEDDING_MODEL=nomic-embed-text
       - EMBEDDING_BASE_PATH=http://ollama:11434
       - EMBEDDING_MODEL_PREF=nomic-embed-text:latest
       - EMBEDDING_MODEL_MAX_CHUNK_LENGTH=8192
-      - VECTOR_DB=chroma
+      - VECTOR_DB=lancedb
       - CHROMA_ENDPOINT=http://chroma:8000
       - CHROMA_API_HEADER=
       - CHROMA_API_KEY=
@@ -27,8 +27,6 @@ services:
       - WHISPER_PROVIDER=local
       - TTS_PROVIDER=native
       - PASSWORDMINCHAR=8
-      - ENABLE_INTERNET_ACCESS=true
-      - ENABLE_INTERNET_SEARCH=true
     volumes:
       - ./data/storage:/app/server/storage
       - ./data/documents:/app/server/documents
