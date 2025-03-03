@@ -3,6 +3,8 @@ services:
   anythingllm:
     image: mintplexlabs/anythingllm
     container_name: anythingllm
+    pull_policy: always
+    tty: true
     ports:
       - "3001:3001"
     cap_add:
@@ -28,10 +30,8 @@ services:
       - TTS_PROVIDER=native
       - PASSWORDMINCHAR=8
     volumes:
-      - ./data/storage:/app/server/storage
-      - ./data/documents:/app/server/documents
-      - ./data/vector-cache:/app/server/storage/vector-cache
-      - ./data/chroma:/app/server/storage/vector-db/chroma
+      - anythingllm_storage:/app/server/storage
+      - anythingllm_chroma:/app/server/storage/vector-db/chroma
     restart: unless-stopped
     depends_on:
       - ollama
@@ -39,21 +39,20 @@ services:
     networks:
       - anythingllm-network
 
+  # NVIDIA GPU Configuration for Ollama
   ollama:
     image: ollama/ollama:latest
+    container_name: any-ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
     runtime: nvidia
     environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-      - OLLAMA_GPU_OVERHEAD=200
-      - OLLAMA_FLASH_ATTENTION=true
+      - OLLAMA_KEEP_ALIVE=24h
+    volumes:
+      - anythingllm_ollama:/root/.ollama
     ports:
       - "11434:11434"
-    volumes:
-      - ./scripts:/scripts
-      - ./data/ollama:/root/.ollama
-    entrypoint: ["/bin/bash", "/scripts/init-ollama.sh"]
-    restart: unless-stopped
     networks:
       - anythingllm-network
     deploy:
@@ -61,13 +60,13 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              count: all
+              count: 1
               capabilities: [gpu]
 
   chroma:
     image: ghcr.io/chroma-core/chroma:latest
     volumes:
-      - ./data/chroma_data:/chroma/chroma
+      - anythingllm_chroma_data:/chroma/chroma
     environment:
       - ALLOW_RESET=true
       - ANONYMIZED_TELEMETRY=false
@@ -80,3 +79,12 @@ services:
 networks:
   anythingllm-network:
     driver: bridge
+
+volumes:
+  anythingllm_chroma:
+    driver: local
+  anythingllm_ollama:
+    driver: local
+  anythingllm_chroma_data:
+    driver: local
+
