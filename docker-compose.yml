@@ -30,8 +30,11 @@ services:
       - TTS_PROVIDER=native
       - PASSWORDMINCHAR=8
     volumes:
-      - anythingllm_storage:/app/server/storage
-      - anythingllm_chroma:/app/server/storage/vector-db/chroma
+      - ./data/storage:/app/server/storage
+      - ./data/documents:/app/server/documents
+      - ./data/vector-cache:/app/server/storage/vector-cache
+      - ./data/chroma:/app/server/storage/vector-db/chroma
+    # entrypoint: ["/bin/bash", "/scripts/init-ollama.sh"]
     restart: unless-stopped
     depends_on:
       - ollama
@@ -81,9 +84,9 @@ networks:
     driver: bridge
 
 volumes:
-  anythingllm_chroma:
-    driver: local
   anythingllm_ollama:
+    driver: local
+  anythingllm_storage:
     driver: local
   anythingllm_chroma_data:
     driver: local
